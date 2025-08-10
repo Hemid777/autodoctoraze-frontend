@@ -17,7 +17,7 @@ jobs:
           node-version: 20
 
       - name: Install deps
-        run: npm ci
+        run: npm install
 
       - name: Build web
         run: npm run build
@@ -39,6 +39,9 @@ jobs:
 
       - name: Sync Capacitor Android
         run: npx cap sync android
+
+      - name: Make gradlew executable
+        run: chmod +x android/gradlew
 
       - name: Build APK (debug)
         run: |
