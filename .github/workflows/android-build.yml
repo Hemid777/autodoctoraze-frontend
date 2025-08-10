@@ -34,11 +34,20 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Add Android platform
-        run: npx cap add android --skip-deps-check || true
+      - name: Capacitor version (debug)
+        run: npx cap --version
+
+      - name: Add Android platform (create android/)
+        run: npx cap add android --skip-deps-check --verbose
+
+      - name: Ensure android folder exists
+        run: |
+          ls -la
+          test -d android || (echo "android/ not created" && exit 1)
+          ls -la android
 
       - name: Sync Capacitor Android
-        run: npx cap sync android
+        run: npx cap sync android --verbose
 
       - name: Make gradlew executable
         run: chmod +x android/gradlew
