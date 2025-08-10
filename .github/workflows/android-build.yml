@@ -1,44 +1,14 @@
-name: Android APK (Capacitor)
-
-on:
-  workflow_dispatch:
-  push:
-    branches: [ main ]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install deps
-        run: npm install
-
-      - name: Build web
-        run: npm run build
-        env:
-          VITE_API_BASE: ${{ secrets.VITE_API_BASE }}
-          VITE_API_TOKEN: ${{ secrets.VITE_API_TOKEN }}
-
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 17
-
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+
+      - name: Ensure Capacitor deps
+        run: npm i @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
 
       - name: Capacitor version (debug)
         run: npx cap --version
 
       - name: Add Android platform (create android/)
-        run: npx cap add android --verbose
+        run: npx cap add android
 
       - name: Ensure android folder exists
         run: |
@@ -47,7 +17,7 @@ jobs:
           ls -la android
 
       - name: Sync Capacitor Android
-        run: npx cap sync android --verbose
+        run: npx cap sync android
 
       - name: Make gradlew executable
         run: chmod +x android/gradlew
@@ -56,9 +26,3 @@ jobs:
         run: |
           cd android
           ./gradlew assembleDebug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
